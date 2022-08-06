@@ -14,7 +14,7 @@ setwd("~/Documents/wale_docs/phd/data") # optional
 
 #Auxilliary Functions
 #!important to run the derivative aux function first
-derivative <- function(input, pl=T, adjParam = 0.1){#you can set pl = False to reduce the number of plots generated in the main function
+derivative <- function(input, pl=F, adjParam = 0.1){#you can set pl = False to reduce the number of plots generated in the main function
   
   minData <- min(input$wellName, na.rm = T)
   #print(minData)
@@ -98,7 +98,9 @@ derivative <- function(input, pl=T, adjParam = 0.1){#you can set pl = False to r
 #NOTE
 #TRG_CALC can function on its own if you supply an already imported dataset i.e. the read.table() importer
 
-TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, colorCode='chocolate', adjP = 0.1, min_start = -4) {
+#Added new parameters as per david's recommendations#####
+
+TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, colorCode='chocolate', adjP = 0.1, od_transf_start = -4) {
   
   
   xAxis = plate$Time
@@ -157,14 +159,14 @@ TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, co
     }else {
       elbowPoint <- xAxis[length(plate[,'Time'])]
     }
- 
+    
     plot(xAxis, cd, pch=1, col=colorCode, ylim = c(0,1.2), xlim=c(0,24), 
          main = colnames(plate[column]), cex=0.5, ylab = 'Raw', xlab = 'Time')
     abline(v = elbowPoint, col = 'grey')
     abline(h = baseline, col= 'blue')
     
-    print(baseline_range)
-
+    #print(baseline_range)
+    
     pickup <- head(baseline_range, n = 1)
     if (pickup < 1) {
       pickup = 1
@@ -176,14 +178,14 @@ TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, co
     yAxis <- cd-baseline
     utcorData <- data.frame('x' = xData, 'y'= suppressWarnings(log(yAxis)))
     
-    corData <- subset(utcorData, y>=log(exp(min_start)) & y<=log(0.5))
+    corData <- subset(utcorData, y>=log(exp(od_transf_start)) & y<=log(0.5))
     
     if (nrow(corData) > 1) {
       #run sliding window
       slope <- runner(
         x = corData,
-        k = 3,
-        at = c(3,4),
+        k = windowSize,
+        at = c(3:windowSize),
         function(x) {
           coefficients(lm(y ~ x, data = x))[2]
         }
@@ -206,7 +208,7 @@ TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, co
       #print('wale')
       #print(slopeUsed)
       #print(whichSlope)
-
+      
       slopeDetails <- slopeUsed[,whichSlope]
       transRawD <- (slopeUsed[,whichSlope]$model)$y
       indTransRawD = which(utcorData$y %in% transRawD)+ pickup
@@ -224,7 +226,7 @@ TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, co
       slope <- coefficients(slopeDetails)[[2]]
       #print(slope)
       #TRG Calculator USING new n= 0.01123556
-      TRG_absolute <- (log(0.01113222) - intercept)/slope
+      TRG_absolute <- (log(0.0035) - intercept)/slope
       
       #print(TRG_absolute)
       
@@ -346,11 +348,13 @@ plottingMachineX1 <- function(folder_Name){
 }
 
 #Direct Implementation
-#sample_data <- read.table(file = "/Users/josoga2/Documents/wale_docs/phd/data/21_11_26/Output/211126_Plate2_NA.txt", sep = '\t', header = T)
+sample_data <- read.table(file = "/Users/josoga2/Documents/wale_docs/phd/data/RG_JV_20h_96wp_220729_ref.txt", sep = '\t', header = T)
 #litData <- data.frame('Time' = p1$Time, 'Well' = p1$O23)
-#a = TRG_CALCULATOR_THREE(plate = sample_data, date = NULL, plate_no = NULL)
+pdf(file = 'mystery_data_FIXED.pdf' ,useDingbats = F, paper = 'a4r', width = 120, height = 80)
+par(mfrow = c(8,12), cex=0.25, mar=c(2,2,2,2), oma=c(2,2,2,2), no.readonly = T)
+a = TRG_CALCULATOR_THREE(plate = sample_data, date = NULL, plate_no = NULL)
 
-
+dev.off()
 
 
 #implementation: Just specify a folder with output in it
