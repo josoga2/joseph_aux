@@ -98,7 +98,7 @@ derivative <- function(input, pl=F, adjParam = 0.1){#you can set pl = False to r
 #NOTE
 #TRG_CALC can function on its own if you supply an already imported dataset i.e. the read.table() importer
 
-#Added new parameters as per david's recommendations
+#Added new parameters as per david's recommendations#####
 
 TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, colorCode='chocolate', adjP = 0.1, od_transf_start = -4) {
   
