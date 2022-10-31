@@ -199,7 +199,7 @@ TRG_CALCULATOR_THREE <- function(plate, windowSize=4, date, plate_no, method, co
       slopeUsed <- runner(
         x = corData,
         k = 3,
-        at = c(3,4),
+        at = c(3:windowSize),
         function(x) {
           lm(y ~ x, data = x)
         }
