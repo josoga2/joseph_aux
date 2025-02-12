@@ -1,3 +1,3 @@
 # Auxilliary Functions
-### Collection of scripts created by Joseph for his PhD projects and general high throughput data analysis
+Collection of functions created by Joseph for his PhD projects and general high throughput data analysis
 
