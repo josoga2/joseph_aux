@@ -1,2 +1,3 @@
-# joseph_aux
-## Collection of scripts created by joseph for his PhD projects
+# Auxilliary Functions
+### Collection of scripts created by Joseph for his PhD projects and general high throughput data analysis
+
